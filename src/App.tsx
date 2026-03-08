@@ -71,9 +71,9 @@ if(players.some(p => p.name.toLowerCase() === name.toLowerCase())){
     return
   }
 
-const shuffled = [...availablePlayers].sort(()=>Math.random()-0.5)
-
-const sortedPlayers = shuffled.sort((a,b)=>b.rating-a.rating)
+const sortedPlayers = [...availablePlayers]
+  .sort((a,b)=>b.rating-a.rating)
+  .sort(()=>Math.random()-0.5)
 
 let numberOfTeams = 2
 
@@ -118,15 +118,29 @@ else {
 
 }
 
-// até 10 jogadores → distribuição alternada (equilíbrio imediato)
+// até 10 jogadores → distribuir respeitando tamanho das equipas
 if (total <= 10) {
 
-  sortedPlayers.forEach((player, index) => {
+  sortedPlayers.forEach(player => {
 
-    const teamIndex = index % 2
+    let bestTeam = -1
+    let lowestRating = Infinity
 
-    newTeams[teamIndex].push(player)
-    teamRatings[teamIndex] += player.rating
+    for (let i = 0; i < 2; i++) {
+
+      if (newTeams[i].length >= teamSizes[i]) continue
+
+      if (teamRatings[i] < lowestRating) {
+        lowestRating = teamRatings[i]
+        bestTeam = i
+      }
+
+    }
+
+    if (bestTeam !== -1) {
+      newTeams[bestTeam].push(player)
+      teamRatings[bestTeam] += player.rating
+    }
 
   })
 
