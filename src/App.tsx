@@ -177,6 +177,32 @@ else {
   setTeams(newTeams)
 
 }
+const copyTeams = () => {
+
+  if (teams.length === 0) {
+    alert("Primeiro gera as equipas")
+    return
+  }
+
+  let text = "⚽ Equipas de hoje\n\n"
+
+  teams.forEach((team:any, index:number) => {
+
+    text += `Equipa ${index + 1}\n`
+
+    team.forEach((player:any) => {
+      text += `${player.name} ${"⭐".repeat(player.rating)}\n`
+    })
+
+    text += "\n"
+
+  })
+
+  navigator.clipboard.writeText(text)
+
+  alert("Equipas copiadas!")
+
+}
 
   return (
 
@@ -263,6 +289,22 @@ else {
   }}
 >
 🔄 Novo Sorteio
+</button>
+<button
+  onClick={copyTeams}
+  style={{
+    width:"100%",
+    padding:"10px",
+    borderRadius:"10px",
+    border:"none",
+    background:"#2e7d32",
+    color:"white",
+    fontSize:"14px",
+    fontWeight:"bold",
+    marginBottom:"20px"
+  }}
+>
+📋 Copiar Equipas
 </button>
 
 <h2>Equipas</h2>
