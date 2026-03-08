@@ -75,7 +75,11 @@ const shuffled = [...availablePlayers].sort(()=>Math.random()-0.5)
 
 const sortedPlayers = shuffled.sort((a,b)=>b.rating-a.rating)
 
-const numberOfTeams = Math.ceil(availablePlayers.length / 5)
+let numberOfTeams = 2
+
+if (availablePlayers.length > 10) {
+  numberOfTeams = Math.ceil(availablePlayers.length / 5)
+}
 
   const newTeams:any[] = Array.from({ length: numberOfTeams }, () => [])
   const teamRatings = new Array(numberOfTeams).fill(0)
@@ -83,43 +87,78 @@ const numberOfTeams = Math.ceil(availablePlayers.length / 5)
   // definir quantos jogadores cada equipa deve ter
 const teamSizes:number[] = []
 
-let remainingPlayers = availablePlayers.length
+const total = availablePlayers.length
 
-for(let i=0;i<numberOfTeams;i++){
+// até 10 jogadores → dividir equilibradamente
+if (total <= 10) {
 
-  if(i < 2){
-    teamSizes.push(Math.min(5, remainingPlayers))
-    remainingPlayers -= teamSizes[i]
-  }else{
-    teamSizes.push(remainingPlayers)
-    remainingPlayers = 0
-  }
+  const team1 = Math.ceil(total / 2)
+  const team2 = total - team1
 
-}
+  teamSizes.push(team1)
+  teamSizes.push(team2)
 
-// distribuir jogadores equilibrando rating
-sortedPlayers.forEach(player => {
+} 
+// mais de 10 → 5 + 5 + resto
+else {
 
-  let bestTeam = -1
-  let lowestRating = Infinity
+  let remainingPlayers = total
 
-  for(let i=0;i<numberOfTeams;i++){
+  for (let i = 0; i < numberOfTeams; i++) {
 
-    if(newTeams[i].length >= teamSizes[i]) continue
-
-    if(teamRatings[i] < lowestRating){
-      lowestRating = teamRatings[i]
-      bestTeam = i
+    if (i < 2) {
+      teamSizes.push(5)
+      remainingPlayers -= 5
+    } else {
+      teamSizes.push(remainingPlayers)
+      remainingPlayers = 0
     }
 
   }
 
-  if(bestTeam !== -1){
-    newTeams[bestTeam].push(player)
-    teamRatings[bestTeam] += player.rating
-  }
+}
 
-})
+// até 10 jogadores → distribuição alternada (equilíbrio imediato)
+if (total <= 10) {
+
+  sortedPlayers.forEach((player, index) => {
+
+    const teamIndex = index % 2
+
+    newTeams[teamIndex].push(player)
+    teamRatings[teamIndex] += player.rating
+
+  })
+
+}
+
+// mais de 10 → usar algoritmo equilibrado com limites
+else {
+
+  sortedPlayers.forEach(player => {
+
+    let bestTeam = -1
+    let lowestRating = Infinity
+
+    for(let i=0;i<numberOfTeams;i++){
+
+      if(newTeams[i].length >= teamSizes[i]) continue
+
+      if(teamRatings[i] < lowestRating){
+        lowestRating = teamRatings[i]
+        bestTeam = i
+      }
+
+    }
+
+    if(bestTeam !== -1){
+      newTeams[bestTeam].push(player)
+      teamRatings[bestTeam] += player.rating
+    }
+
+  })
+
+}
 
   setTeams(newTeams)
 
