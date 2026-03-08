@@ -191,8 +191,8 @@ const copyTeams = () => {
     text += `Equipa ${index + 1}\n`
 
     team.forEach((player:any) => {
-      text += `${player.name} ${"⭐".repeat(player.rating)}\n`
-    })
+  text += `${player.name}\n`
+})
 
     text += "\n"
 
